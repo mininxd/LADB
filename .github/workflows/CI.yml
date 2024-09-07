@@ -42,5 +42,5 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4.4.0
       with:
-        name: test.zip
-        path: ./test.zip
+        name: LADB.apk
+        path: ./app/build/outputs/apk/release/app-release.apk
