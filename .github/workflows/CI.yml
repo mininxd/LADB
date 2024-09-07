@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up JDK
       uses: actions/setup-java@v2
@@ -36,10 +36,11 @@ jobs:
     - name: Check Dir for find APK
       run: |
           ls ./ -a
-          tree ./
+          tree ./app/build/
+          zip -r test.zip ./app/build
 
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
-        name: app-release.apk
-        path: app/build/outputs/apk/release/app-release.apk
+        name: test.zip
+        path: ./test.zip
