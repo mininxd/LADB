@@ -40,7 +40,7 @@ jobs:
           zip -r test.zip ./app/build
 
     - name: Upload APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.4.0
       with:
         name: test.zip
         path: ./test.zip
