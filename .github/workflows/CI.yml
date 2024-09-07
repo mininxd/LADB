@@ -1,7 +1,10 @@
-name: Android CI
+name: unsigned Build
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'  # Trigger the workflow for version tags
 
 jobs:
   build:
@@ -33,15 +36,6 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleRelease
 
-    - name: Set up signing key
-      run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > my-release-key.jks
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-
-    - name: Sign APK
-      run: ./gradlew assembleRelease -Pandroid.injected.signing.store.file=my-release-key.jks -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
-
     - name: Check Dir for find APK
       run: |
           ls ./ -a
@@ -50,5 +44,23 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4.4.0
       with:
-        name: LADB.apk
-        path: ./app/build/outputs/apk/release/app-release.apk
+        name: LADB_unsigned.apk
+        path: ./app/build/outputs/apk/release/app-release-unsigned.apk
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: unsigned APK
+        body: 'Release of version ${{ github.ref }}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./app/build/outputs/apk/release/app-release-unsigned.apk
+        asset_name: LADB_unsigned.apk
+        asset_content_type: application/vnd.android.package-archive
