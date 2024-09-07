@@ -51,7 +51,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: ${{ github.run_number }}${{ github.workflow_sha }}
         release_name: unsigned APK
         body: 'Release of version ${{ github.ref }}'
       env:
