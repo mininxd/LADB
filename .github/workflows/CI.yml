@@ -33,6 +33,11 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleRelease
 
+    - name: Check Dir for find APK
+      run: |
+          ls ./ -a
+          tree ./
+
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
