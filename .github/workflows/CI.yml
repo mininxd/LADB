@@ -33,6 +33,15 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleRelease
 
+    - name: Set up signing key
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > my-release-key.jks
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+    - name: Sign APK
+      run: ./gradlew assembleRelease -Pandroid.injected.signing.store.file=my-release-key.jks -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+
     - name: Check Dir for find APK
       run: |
           ls ./ -a
